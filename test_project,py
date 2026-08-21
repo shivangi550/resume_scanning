@@ -1,0 +1,184 @@
+from src.job_description import extract_job_requirements
+
+from src.scoring import (
+    calculate_experience_match,
+    calculate_education_match,
+    calculate_final_score,
+)
+
+from src.skill_matching import calculate_skill_match
+
+print("=" * 60)
+print("RESUME SCREENING SYSTEM - TEST")
+print("=" * 60)
+
+
+# --------------------------------------------------
+# TEST 1 — JOB DESCRIPTION
+# --------------------------------------------------
+
+job_description = """
+We are looking for a Python Developer.
+
+Requirements:
+B.Tech in Computer Science.
+2+ years of experience.
+
+Skills:
+Python, SQL, Pandas, Machine Learning and Git.
+"""
+
+
+requirements = extract_job_requirements(job_description)
+
+
+print("\nTEST 1: JOB REQUIREMENTS")
+
+print("Required Skills:", requirements["required_skills"])
+
+print("Experience:", requirements["experience_required"])
+
+print("Education:", requirements["required_education"])
+
+
+# --------------------------------------------------
+# TEST 2 — SKILL MATCHING
+# --------------------------------------------------
+
+candidate_skills = ["python", "sql", "pandas", "git"]
+
+
+skill_result = calculate_skill_match(requirements["required_skills"], candidate_skills)
+
+
+print("\nTEST 2: SKILL MATCHING")
+
+print("Matched:", skill_result["matched_skills"])
+
+print("Missing:", skill_result["missing_skills"])
+
+print("Skill Score:", skill_result["skill_score"])
+
+
+# --------------------------------------------------
+# TEST 3 — EXPERIENCE
+# --------------------------------------------------
+
+experience_score = calculate_experience_match(
+    ["3"], requirements["experience_required"]
+)
+
+
+print("\nTEST 3: EXPERIENCE MATCH")
+
+print("Experience Score:", experience_score)
+
+
+# --------------------------------------------------
+# TEST 4 — EDUCATION
+# --------------------------------------------------
+
+education_score = calculate_education_match(
+    ["b.tech", "computer science"], requirements["required_education"]
+)
+
+
+print("\nTEST 4: EDUCATION MATCH")
+
+print("Education Score:", education_score)
+
+
+# --------------------------------------------------
+# TEST 5 — FINAL SCORE
+# --------------------------------------------------
+
+tfidf_score = 70
+
+final_score = calculate_final_score(
+    tfidf_score, skill_result["skill_score"], experience_score, education_score
+)
+
+
+print("\nTEST 5: FINAL SCORE")
+
+print("TF-IDF:", tfidf_score)
+
+print("Skill:", skill_result["skill_score"])
+
+print("Experience:", experience_score)
+
+print("Education:", education_score)
+
+print("FINAL SCORE:", final_score)
+
+
+# --------------------------------------------------
+# BASIC VALIDATION
+# --------------------------------------------------
+
+print("\n" + "=" * 60)
+print("VALIDATION")
+print("=" * 60)
+
+
+if final_score >= 0 and final_score <= 100:
+
+    print(" Final score is within valid range.")
+
+else:
+
+    print(" Final score is outside valid range.")
+
+
+if skill_result["matched_skills"]:
+
+    print(" Skill matching is working.")
+
+else:
+
+    print(" Skill matching failed.")
+
+
+if requirements["required_skills"]:
+
+    print(" JD skill extraction is working.")
+
+else:
+
+    print(" JD skill extraction failed.")
+
+
+print("\nTesting completed.")
+
+
+print("\n" + "=" * 60)
+print("WEAK CANDIDATE TEST")
+print("=" * 60)
+
+
+weak_candidate_skills = ["python"]
+
+
+weak_skill_result = calculate_skill_match(
+    requirements["required_skills"], weak_candidate_skills
+)
+
+
+weak_experience = calculate_experience_match(["1"], requirements["experience_required"])
+
+
+weak_education = calculate_education_match(["bsc"], requirements["required_education"])
+
+
+weak_final_score = calculate_final_score(
+    30, weak_skill_result["skill_score"], weak_experience, weak_education
+)
+
+
+print("Weak Candidate Skill Score:", weak_skill_result["skill_score"])
+
+print("Weak Candidate Experience:", weak_experience)
+
+print("Weak Candidate Education:", weak_education)
+
+print("Weak Candidate Final Score:", weak_final_score)

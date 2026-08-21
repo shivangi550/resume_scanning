@@ -1,0 +1,623 @@
+#  Resume Screening & Candidate Ranking System
+
+An automated resume screening system built with Python and Streamlit that extracts information from resumes, compares candidates with a Job Description (JD), calculates candidate scores, ranks candidates, and provides an explainable screening summary.
+
+---
+
+##  Project Overview
+
+Recruiters often have to manually review a large number of resumes for a single job opening.
+
+This project automates the initial resume screening process by:
+
+- Extracting text from PDF resumes
+- Cleaning and preprocessing resume text
+- Extracting candidate information
+- Extracting requirements from a Job Description
+- Matching candidate skills with required skills
+- Comparing candidate experience with required experience
+- Comparing candidate education with job requirements
+- Calculating a final candidate score
+- Ranking candidates
+- Explaining why a candidate received a particular score
+- Displaying screening analytics
+- Exporting results to Excel/CSV
+
+The application provides an interactive Streamlit dashboard for recruiters.
+
+---
+
+#  Features
+
+## 1. Resume PDF Processing
+
+The system accepts multiple PDF resumes and extracts their text automatically.
+
+Example:
+
+```text
+Resume PDF
+    ↓
+Text Extraction
+    ↓
+Plain Resume Text
+```
+
+## 2. Resume Preprocessing
+
+The extracted text is cleaned using NLP preprocessing techniques such as:
+
+- Lowercasing
+- Removing unnecessary characters
+- Tokenization
+- Stopword removal
+- Text normalization
+
+## 3. Information Extraction
+
+The system extracts important candidate information including:
+
+- Name
+- Email
+- Phone number
+- Skills
+- Education
+- Experience
+
+Example:
+```text
+Name: Rahul Sharma
+
+Email: rahul@gmail.com
+
+Phone: +91XXXXXXXXXX
+
+Skills:
+Python
+SQL
+Pandas
+Machine Learning
+Git
+
+Education:
+B.Tech
+Computer Science
+
+Experience:
+2 years
+```
+
+## 4. Job Description Analysis
+
+The recruiter can paste a Job Description directly into the application.
+
+The system extracts:
+- Required skills
+- Required experience
+- Education requirements
+
+Example:
+```text
+Required Skills:
+Python
+SQL
+Pandas
+Machine Learning
+Git
+
+Experience:
+2+ years
+
+Education:
+B.Tech / Computer Science
+```
+
+## 5. Skill Matching
+
+Candidate skills are compared with the skills required by the Job Description.
+
+Example:
+```text
+Required:
+Python
+SQL
+Pandas
+Machine Learning
+Git
+
+Candidate:
+Python
+SQL
+Pandas
+Git
+```
+Result:
+```text
+Matched Skills:
+Python
+SQL
+Pandas
+Git
+
+Missing Skills:
+Machine Learning
+```
+
+## 6. Candidate Scoring
+
+Candidates receive a final score based on multiple factors.
+
+Current scoring formula:
+```text
+Final Score =
+    30% × TF-IDF Similarity
+  + 50% × Skill Match
+  + 15% × Experience Match
+  + 5% × Education Match
+```
+The final score is represented as a percentage from 0–100.
+
+Note: These weights are project-defined prototype weights and are not intended to represent a validated hiring standard
+
+## 7. Candidate Ranking
+
+Candidates are automatically sorted according to their final score.
+
+Example:
+```text
+Rank    Candidate        Score
+--------------------------------
+1       Rahul Sharma     84.2%
+2       Priya Singh      76.5%
+3       Amit Kumar       68.1%
+4       Candidate 4      51.7%
+```
+
+## 8. Explainable Ranking 
+
+The application explains why a candidate received their score.
+
+Example:
+```text
+Matched 4 of 5 required skills.
+
+Missing skills:
+Machine Learning
+
+Experience requirement met
+(3 years).
+
+Education requirement matched.
+```
+This makes the ranking easier to understand instead of providing only a numerical score.
+
+
+## 9. Screening Dashboard
+
+The Streamlit dashboard provides a summary including:
+
+- Total candidates screened
+- Strong matches
+- Moderate matches
+- Average score
+- Top candidate
+- Common missing skills
+
+Example:
+```text
+Candidates Screened: 10
+Strong Matches: 3
+Moderate Matches: 5
+Average Score: 68.4%
+
+Top Candidate:
+Rahul Sharma — 84.2%
+```
+
+## 10. Export Results
+
+Screening results can be exported for further analysis.
+
+Supported output includes:
+
+- Excel
+- CSV
+- JSONL
+
+# Project Architecture
+```marmaid
+                         ┌────────────────────┐
+                         │   Job Description  │
+                         └─────────┬──────────┘
+                                   │
+                                   ▼
+                        ┌─────────────────────┐
+                        │ JD Requirement      │
+                        │ Extraction          │
+                        └─────────┬───────────┘
+                                  │
+                                  │
+┌───────────────┐                 │
+│ Resume PDFs   │                 │
+└───────┬───────┘                 │
+        │                         │
+        ▼                         │
+┌──────────────────┐              │
+│ Text Extraction  │              │
+└────────┬─────────┘              │
+         │                        │
+         ▼                        │
+┌──────────────────┐              │
+│ Text             │              │
+│ Preprocessing    │              │
+└────────┬─────────┘              │
+         │                        │
+         ▼                        │
+┌────────────────────────┐        │
+│ Information Extraction │        │
+└──────────┬─────────────┘        │
+           │                      │
+           ▼                      ▼
+      Candidate Data       Job Requirements
+           │                      │
+           └──────────┬───────────┘
+                      ▼
+             ┌────────────────┐
+             │ Skill Matching │
+             └───────┬────────┘
+                     │
+                     ▼
+             ┌────────────────┐
+             │ TF-IDF Matching│
+             └───────┬────────┘
+                     │
+                     ▼
+             ┌────────────────────┐
+             │ Experience Match   │
+             │ Education Match    │
+             └─────────┬──────────┘
+                       │
+                       ▼
+               ┌──────────────┐
+               │ Final Score  │
+               └──────┬───────┘
+                      │
+                      ▼
+               ┌──────────────┐
+               │   Ranking    │
+               └──────┬───────┘
+                      │
+             ┌────────┴────────┐
+             ▼                 ▼
+       Dashboard          Excel / CSV
+
+```
+# Project Structure
+```marmaid
+resume_scanning/
+│
+├── app.py
+├── evaluation.py
+├── test_project.py
+├── README.md
+├── requirements.txt
+│
+├── data/
+│   ├── resumes/
+│   │   ├── resume1.pdf
+│   │   ├── resume2.pdf
+│   │   └── ...
+│   │
+│   └── job_description.txt
+│
+├── outputs/
+│   ├── result.jsonl
+│   ├── candidate_ranking.csv
+│   └── candidate_report.xlsx
+│
+├── src/
+│   ├── extract_text.py
+│   ├── preprocess.py
+│   ├── information_extraction.py
+│   ├── job_description.py
+│   ├── matching.py
+│   ├── skill_matching.py
+│   ├── scoring.py
+│   └── explanation.py
+│
+└── venv/
+```
+
+
+# Technologies Used
+
+### Programming Language
+- Python
+### Web Framework
+- Streamlit
+### Natural Language Processing
+- NLTK
+- Scikit-learn
+###PDF Processing
+- PyMuPDF
+###Data Processing
+- Pandas
+###Visualization
+- Plotly
+###Export
+- OpenPyXL
+
+
+# Installation
+
+## 1. Clone the repository 
+
+```text
+git clone YOUR_GITHUB_REPOSITORY_URL
+```
+Move into the project directory:
+```text
+cd resume_scanning
+```
+
+## 2. Create a virtual environment 
+
+Windows:
+```text
+python -m venv venv
+```
+Activate it:
+```text
+venv\Scripts\activate
+```
+You should see:
+```text
+(venv)
+```
+in your terminal.
+
+## 3. Install dependencies
+
+```text
+pip install -r requirements.txt
+```
+
+## 4. Download NLTK resources
+
+Run:
+```text
+python -m nltk.downloader punkt punkt_tab stopwords wordnet
+```
+If your version of NLTK requires additional resources, download them when prompted.
+
+
+# Running the Application
+
+Start Streamlit:
+```text
+python -m streamlit run app.py
+```
+The terminal will provide a local URL similar to:
+```text
+http://localhost:8501
+```
+Open that address in your browser.
+
+
+# How to Use
+
+## Step 1 — Enter Job Description
+
+Paste the Job Description into the Job Description text area.
+Example:
+```text
+We are looking for a Python Developer.
+
+Requirements:
+B.Tech in Computer Science.
+2+ years of experience.
+
+Skills:
+Python, SQL, Pandas, Machine Learning and Git.
+```
+
+## Step 2 — Upload Resumes
+
+Upload one or more PDF resumes.
+```text
+resume1.pdf
+resume2.pdf
+resume3.pdf
+...
+```
+
+## Step 3 — Start Screening
+
+Click:
+```text
+Screen Resumes
+```
+The system processes the resumes.
+
+## Step 4 — View Results
+
+The application displays:
+- Candidate ranking
+- Final scores
+- Matched skills
+- Missing skills
+- Experience
+- Education
+- Score breakdown
+- Candidate explanation
+
+## Step 5 — Export Results 
+
+The screening results can be downloaded as Excel/CSV files for further analysis.
+
+# Testing
+
+Run the basic project tests:
+```text
+python test_project.py
+```
+
+The tests check:
+- Job description extraction
+- Skill matching
+- Experience matching
+- Education matching
+- Final score calculation
+
+
+# Evaluation
+
+Run:
+``` text
+python evaluation.py
+```
+
+This displays:
+- Candidate ranking
+- Number of candidates
+- Average score
+- Highest score
+- Lowest score
+For a meaningful project evaluation, compare system rankings against a manually reviewed set of resumes.
+
+
+# Example Output
+
+```text
+==================================================
+CANDIDATE RANKING
+==================================================
+
+1. Rahul Sharma — 84.2%
+2. Priya Singh — 76.5%
+3. Amit Kumar — 68.1%
+4. Candidate 4 — 51.7%
+```
+
+Candidate details:
+```text
+Candidate: Rahul Sharma
+
+Skills:
+Python
+SQL
+Pandas
+Git
+
+Matched Skills:
+Python
+SQL
+Pandas
+Git
+
+Missing Skills:
+Machine Learning
+
+Experience:
+3 years
+
+Experience Match:
+100%
+
+Education Match:
+100%
+
+Final Score:
+84.2%
+```
+
+
+# Privacy and Security
+
+Resume files can contain sensitive personal information.
+
+For this project:
+- Do not upload real candidate resumes containing unnecessary personal information to a public GitHub repository.
+- Do not commit private resumes.
+- Do not commit generated candidate reports containing personal information.
+- Use sample or anonymized resumes for demonstrations.
+Add sensitive files to .gitignore.
+
+# Limitations
+
+This project is a prototype and has several limitations.
+
+### 1. Rule-Based Information Extraction
+Candidate information is extracted using predefined patterns and keywords. Complex resume formats may not be parsed correctly.
+### 2. Limited Skill Dictionary
+The current system uses a predefined list of skills. New or uncommon technologies may not be detected.
+### 3. Education Matching
+Education matching is currently based on keyword matching and does not fully understand degree equivalence.
+### 4. Experience Extraction
+Experience extraction may not correctly interpret every possible resume format.
+### 5. Scoring Weights
+The current scoring weights are manually defined:
+TF-IDF: 30%
+Skills: 50%
+Experience: 15%
+Education: 5%
+These values have not been statistically validated.
+### 6. No Semantic Understanding
+TF-IDF is based primarily on word-level similarity and may miss semantic relationships between different phrases.
+### 7. Human Review Required
+The system should be used as a screening aid, not as an automatic final hiring decision-maker.
+
+
+# Future Improvements
+
+Possible future improvements include:
+
+- Transformer-based semantic similarity
+- BERT/Sentence Transformers
+- Named Entity Recognition
+- Better resume section detection
+- More advanced skill extraction
+- Job title classification
+- Better experience calculation
+- Degree equivalence detection
+- Recruiter feedback system
+- Database integration
+- Authentication
+- Cloud deployment
+- Resume ranking visualization
+- Advanced analytics
+- Bias and fairness evaluation
+
+# Project Learning Outcomes
+
+This project demonstrates practical experience with:
+
+- Python programming
+- File handling
+- PDF processing
+- Natural Language Processing
+- Text preprocessing
+- Information extraction
+- TF-IDF
+- Similarity calculation
+- Feature-based scoring
+- Candidate ranking
+- Streamlit application development
+- Data visualization
+- Excel/CSV generation
+- Software testing
+- Project evaluation
+
+
+# Author
+
+Shivangi Jaiswal
+B.Sc.(Hons) Computer Science 
+Banaras Hindu University
+GitHub:
+YOUR_GITHUB_PROFILE_URL
+
+
+# Acknowledgements
+
+This project was developed as an academic/prototype project to explore Natural Language Processing and automated resume screening.
