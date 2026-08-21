@@ -1,9 +1,12 @@
 import re
-
+import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
+nltk.download("stopwords", quiet=True)
+nltk.download("wordnet", quiet=True)
+nltk.download("omw-1.4", quiet=True)
 
 # Create the stop-word list
 stop_words = set(stopwords.words("english"))
@@ -27,16 +30,10 @@ def preprocess_text(text):
     tokens = word_tokenize(text)
 
     # 4. Remove stop words
-    tokens = [
-        word for word in tokens
-        if word not in stop_words
-    ]
+    tokens = [word for word in tokens if word not in stop_words]
 
     # 5. Lemmatize words
-    tokens = [
-        lemmatizer.lemmatize(word)
-        for word in tokens
-    ]
+    tokens = [lemmatizer.lemmatize(word) for word in tokens]
 
     # 6. Convert the words back into a single string
     cleaned_text = " ".join(tokens)
