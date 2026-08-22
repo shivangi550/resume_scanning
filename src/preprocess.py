@@ -7,6 +7,9 @@ from nltk.tokenize import word_tokenize
 nltk.download("stopwords", quiet=True)
 nltk.download("wordnet", quiet=True)
 nltk.download("omw-1.4", quiet=True)
+nltk.download("punkt", quiet=True)
+nltk.download("punkt_tab", quiet=True)
+
 
 # Create the stop-word list
 stop_words = set(stopwords.words("english"))
