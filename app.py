@@ -35,6 +35,9 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+if "screening_results" not in st.session_state:
+    st.session_state["screening_results"] = []
+
 
 # =========================================================
 # CUSTOM CSS
@@ -582,6 +585,8 @@ if page == "Job Setup":
 
                     candidate["rank"] = rank
 
+                st.session_state["screening_results"] = results
+
                 st.session_state.results = results
 
                 st.session_state.job_requirements = job_requirements
@@ -1123,3 +1128,29 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+if st.session_state["screening_results"]:
+    saved_results = st.session_state["screening_results"]
+
+    st.subheader("NLP Model Comparison")
+
+    comparison_rows = []
+
+    for candidate in saved_results:
+        comparison_rows.append(
+            {
+                "Rank": candidate["rank"],
+                "Candidate": candidate["name"],
+                "TF-IDF Score": f'{candidate["tfidf_score"]:.2f}%',
+                "Word2Vec Score": (f'{candidate["word2vec_score"]:.2f}%'),
+                "SBERT Score": f'{candidate["sbert_score"]:.2f}%',
+            }
+        )
+
+    comparison_df = pd.DataFrame(comparison_rows)
+
+    st.dataframe(
+        comparison_df,
+        hide_index=True,
+        use_container_width=True,
+    )
