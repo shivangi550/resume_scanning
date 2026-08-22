@@ -15,3 +15,4 @@ openpyxl
 scikit-learn
 gensim
 numpy
+sentence-transformers

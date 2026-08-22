@@ -15,6 +15,8 @@ from src.skill_matching import calculate_skill_match
 from src.job_description import extract_job_requirements
 from src.explanation import generate_candidate_explanation
 from src.word2vec_matching import calculate_word2vec_similarity
+from src.sbert_matching import calculate_sbert_similarity
+
 
 from src.scoring import (
     calculate_final_score,
@@ -492,6 +494,13 @@ if page == "Job Setup":
 
                         word2vec_score = round(word2vec_similarity * 100, 2)
 
+                        sbert_similarity = calculate_sbert_similarity(
+                            job_text,
+                            raw_text,
+                        )
+
+                        sbert_score = round(sbert_similarity * 100, 2)
+
                         skill_result = calculate_skill_match(
                             job_skills,
                             information["skills"],
@@ -538,6 +547,7 @@ if page == "Job Setup":
                                 "experience": information["experience_years"],
                                 "tfidf_score": tfidf_score,
                                 "word2vec_score": word2vec_score,
+                                "sbert_score": sbert_score,
                                 "skill_match_score": skill_score,
                                 "experience_score": experience_score,
                                 "education_score": education_score,
