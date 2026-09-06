@@ -677,19 +677,19 @@ Live Application:
 
 ## Dashboard
 
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](screenshots/Dashboard.png)
 
 ## Candidate Analysis
 
-![Candidate Analysis](screenshots/candidates.png)
+![Candidate Analysis](screenshots/candidate.png)
 
 ## NLP Model Comparison
 
-![NLP Comparison](screenshots/nlp_comparison.png)
+![NLP Comparison](screenshots/nlp_comparision.png)
 
 ## Reports
 
-![Reports](screenshots/reports.png)
+![Reports](screenshots/report.png)
 
 # Author
 
