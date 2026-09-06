@@ -478,7 +478,7 @@ if page == "Job Setup":
 
                         cleaned_text = preprocess_text(raw_text)
 
-                        information = extract_information(cleaned_text)
+                        information = extract_information(raw_text)
 
                         similarity = calculate_similarity(
                             job_cleaned_text,

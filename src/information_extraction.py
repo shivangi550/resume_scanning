@@ -1,6 +1,5 @@
 import re
 
-
 # List of skills that our system can recognize
 SKILLS = [
     "python",
@@ -28,7 +27,7 @@ SKILLS = [
     "html",
     "css",
     "javascript",
-    "react"
+    "react",
 ]
 
 
@@ -77,28 +76,60 @@ def extract_skills(text):
             found_skills.append(skill)
 
     return found_skills
+
+
 def extract_name(text):
     """
-    Try to extract the candidate's name
-    from the beginning of the resume.
+    Extract candidate name from the first few lines
+    of the original resume text.
     """
 
-    lines = text.split("\n")
+    lines = [line.strip() for line in text.split("\n") if line.strip()]
 
-    for line in lines:
+    # Check only the first 10 lines
+    for line in lines[:10]:
 
-        line = line.strip()
+        line_lower = line.lower()
 
-        if line:
-            # Ignore common headings
-            if line.lower() not in [
-                "resume",
-                "curriculum vitae",
-                "cv"
-            ]:
-                return line
+        # Skip common headings and contact details
+        skip_keywords = [
+            "resume",
+            "curriculum vitae",
+            "cv",
+            "email",
+            "phone",
+            "mobile",
+            "linkedin",
+            "github",
+            "address",
+            "@",
+            "summary",
+            "objective",
+            "experience",
+            "education",
+            "skills",
+        ]
 
-    return None
+        if any(keyword in line_lower for keyword in skip_keywords):
+            continue
+
+        # Remove unwanted characters
+        clean_line = re.sub(
+            r"[^A-Za-z\s]",
+            "",
+            line,
+        ).strip()
+
+        words = clean_line.split()
+
+        # Candidate names usually have 2–4 words
+        if 2 <= len(words) <= 4:
+
+            if all(word.isalpha() for word in words):
+
+                return clean_line.title()
+
+    return "Unknown Candidate"
 
 
 def extract_education(text):
@@ -121,7 +152,7 @@ def extract_education(text):
         "mba",
         "phd",
         "computer science",
-        "engineering"
+        "engineering",
     ]
 
     text_lower = text.lower()
@@ -147,7 +178,11 @@ def extract_experience(text):
 
     return matches
 
+
 def extract_information(text):
+    """
+    Extract all important candidate information.
+    """
 
     information = {
         "name": extract_name(text),
@@ -155,11 +190,15 @@ def extract_information(text):
         "phone": extract_phone(text),
         "skills": extract_skills(text),
         "education": extract_education(text),
-        "experience_years": extract_experience(text)
+        "experience_years": extract_experience(text),
     }
 
     return information
-sample_text = """
+
+
+if __name__ == "__main__":
+
+    sample_text = """
 Rahul Sharma
 
 Email: rahul@gmail.com
@@ -179,6 +218,6 @@ Machine Learning
 Git
 """
 
-result = extract_information(sample_text)
+    result = extract_information(sample_text)
 
-print(result)
+    print(result)
