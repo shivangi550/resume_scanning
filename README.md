@@ -670,7 +670,7 @@ This project demonstrates practical experience with:
 The application is deployed using Streamlit Community Cloud.
 
 Live Application:
-[ResumeIQ](YOUR_DEPLOYMENT_URL)
+[ResumeIQ](https://resumescanning-bybgsss8vczyxhgyzgxn25.streamlit.app/)
 
 
 # Screenshots
