@@ -974,6 +974,90 @@ elif page == "Reports":
 
     else:
 
+        # =====================================================
+        # NLP MODEL COMPARISON
+        # =====================================================
+
+        st.markdown(
+            '<div class="section-title">NLP Model Comparison</div>',
+            unsafe_allow_html=True,
+        )
+
+        comparison_rows = []
+
+        for candidate in results:
+
+            comparison_rows.append(
+            {
+                "Rank": candidate["rank"],
+                "Candidate": candidate["name"],
+                "TF-IDF Score": candidate["tfidf_score"],
+                "Word2Vec Score": candidate["word2vec_score"],
+                "SBERT Score": candidate["sbert_score"],
+            }
+        )
+
+        comparison_df = pd.DataFrame(comparison_rows)
+
+        st.dataframe(
+            comparison_df.style.format(
+                {
+                    "TF-IDF Score": "{:.2f}%",
+                    "Word2Vec Score": "{:.2f}%",
+                    "SBERT Score": "{:.2f}%",
+                }
+            ),
+            hide_index=True,
+            use_container_width=True,
+        )
+
+        st.markdown(
+            '<div class="section-title">Model Performance Visualization</div>',
+            unsafe_allow_html=True,
+        )
+
+        chart_comparison_data = comparison_df.melt(
+            id_vars=["Candidate"],
+            value_vars=[
+                "TF-IDF Score",
+                "Word2Vec Score",
+                "SBERT Score",
+            ],
+            var_name="Model",
+            value_name="Similarity Score",
+        )
+
+        fig = px.bar(
+            chart_comparison_data,
+            x="Candidate",
+            y="Similarity Score",
+            color="Model",
+            barmode="group",
+            text="Similarity Score",
+        )
+
+        fig.update_traces(
+            texttemplate="%{text:.1f}%",
+            textposition="outside",
+        )
+
+        fig.update_layout(
+            yaxis_range=[0, 100],
+            yaxis_title="Similarity Score (%)",
+            xaxis_title=None,
+            template="plotly_white",
+            height=450,
+        )
+
+        st.plotly_chart(
+            fig,
+            use_container_width=True,
+     )
+
+        # =====================================================
+        # REPORT DATA
+        # =====================================================
+
         report_data = []
 
         for candidate in results:
@@ -1016,6 +1100,8 @@ elif page == "Reports":
                         )
                     ),
                     "TF-IDF": candidate["tfidf_score"],
+                    "Word2Vec": candidate["word2vec_score"],
+                    "SBERT": candidate["sbert_score"],
                     "Skill Match": candidate["skill_match_score"],
                     "Experience Score": candidate["experience_score"],
                     "Education Score": candidate["education_score"],
@@ -1128,29 +1214,3 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-if st.session_state["screening_results"]:
-    saved_results = st.session_state["screening_results"]
-
-    st.subheader("NLP Model Comparison")
-
-    comparison_rows = []
-
-    for candidate in saved_results:
-        comparison_rows.append(
-            {
-                "Rank": candidate["rank"],
-                "Candidate": candidate["name"],
-                "TF-IDF Score": f'{candidate["tfidf_score"]:.2f}%',
-                "Word2Vec Score": (f'{candidate["word2vec_score"]:.2f}%'),
-                "SBERT Score": f'{candidate["sbert_score"]:.2f}%',
-            }
-        )
-
-    comparison_df = pd.DataFrame(comparison_rows)
-
-    st.dataframe(
-        comparison_df,
-        hide_index=True,
-        use_container_width=True,
-    )

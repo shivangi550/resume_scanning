@@ -8,6 +8,9 @@ from job_description import process_job_description
 from matching import calculate_similarity
 from skill_matching import calculate_skill_match
 
+from word2vec_matching import calculate_word2vec_similarity
+from sbert_matching import calculate_sbert_similarity
+
 # --------------------------------------------------
 # PATHS
 # --------------------------------------------------
@@ -21,7 +24,7 @@ output_folder = "outputs"
 os.makedirs(output_folder, exist_ok=True)
 
 
-# --------------------------------------------------
+# -------------------------------------------------
 # STEP 1: PROCESS JOB DESCRIPTION
 # --------------------------------------------------
 
@@ -53,10 +56,7 @@ for filename in os.listdir(resume_folder):
         print("=" * 60)
 
         # PDF path
-        pdf_path = os.path.join(
-            resume_folder,
-            filename
-        )
+        pdf_path = os.path.join(resume_folder, filename)
 
         # Extract resume text
         raw_text = extract_text_from_pdf(pdf_path)
@@ -67,54 +67,60 @@ for filename in os.listdir(resume_folder):
         # Extract candidate information
         information = extract_information(cleaned_text)
 
-       # Calculate TF-IDF similarity
-        similarity_score = calculate_similarity(
+        # Calculate TF-IDF similarity
+        similarity_score = calculate_similarity(job_cleaned_text, cleaned_text)
+
+        tfidf_percentage = round(similarity_score * 100, 2)
+
+        # Calculate Word2Vec similarity
+        word2vec_score = calculate_word2vec_similarity(
             job_cleaned_text,
             cleaned_text
         )
 
-        tfidf_percentage = round(
-            similarity_score * 100,
+        word2vec_percentage = round(
+            word2vec_score * 100,
             2
         )
 
+        # Calculate SBERT similarity
+        sbert_score = calculate_sbert_similarity(
+            job_cleaned_text,
+            cleaned_text
+        )
+
+        sbert_percentage = round(
+            sbert_score * 100,
+            2
+        )
 
         # Calculate skill match
-        skill_result = calculate_skill_match(
-            job_data["skills"],
-            information["skills"]
-       )
+        skill_result = calculate_skill_match(job_data["skills"], information["skills"])
 
         skill_percentage = skill_result["skill_score"]
         matched_skills = skill_result["matched_skills"]
 
         # Calculate final score
-        final_score = (
-            0.4 * tfidf_percentage
-            +
-            0.6 * skill_percentage
-        )
+        final_score = 0.4 * tfidf_percentage + 0.6 * skill_percentage
 
         final_score = round(final_score, 2)
-        
+
         # Store result
         candidate_result = {
             "resume": filename,
-
             "name": information["name"],
             "email": information["email"],
             "phone": information["phone"],
-
             "skills": information["skills"],
             "matched_skills": matched_skills,
-
             "education": information["education"],
             "experience_years": information["experience_years"],
-
             "tfidf_score": tfidf_percentage,
+            "word2vec_score": word2vec_percentage,
+            "sbert_score": sbert_percentage,
             "skill_match_score": skill_percentage,
-            "final_score": final_score
-       }
+            "final_score": final_score,
+        }
 
         all_results.append(candidate_result)
 
@@ -127,6 +133,8 @@ for filename in os.listdir(resume_folder):
         print("Experience:", information["experience_years"])
         print("Matched Skills:", matched_skills)
         print("TF-IDF Score:", tfidf_percentage, "%")
+        print("Word2Vec Score:", word2vec_percentage, "%")
+        print("SBERT Score:", sbert_percentage, "%")
         print("Skill Match Score:", skill_percentage, "%")
         print("Final Score:", final_score, "%")
 
@@ -135,17 +143,11 @@ for filename in os.listdir(resume_folder):
 # STEP 3: RANK CANDIDATES
 # --------------------------------------------------
 
-all_results.sort(
-    key=lambda candidate: candidate["final_score"],
-    reverse=True
-)
+all_results.sort(key=lambda candidate: candidate["final_score"], reverse=True)
 
 
 # Add ranking
-for rank, candidate in enumerate(
-    all_results,
-    start=1
-):
+for rank, candidate in enumerate(all_results, start=1):
 
     candidate["rank"] = rank
 
@@ -154,24 +156,12 @@ for rank, candidate in enumerate(
 # STEP 4: SAVE RESULTS
 # --------------------------------------------------
 
-output_file = os.path.join(
-    output_folder,
-    "ranked_candidates.json"
-)
+output_file = os.path.join(output_folder, "ranked_candidates.json")
 
 
-with open(
-    output_file,
-    "w",
-    encoding="utf-8"
-) as file:
+with open(output_file, "w", encoding="utf-8") as file:
 
-    json.dump(
-        all_results,
-        file,
-        indent=4,
-        ensure_ascii=False
-    )
+    json.dump(all_results, file, indent=4, ensure_ascii=False)
 
 
 # --------------------------------------------------

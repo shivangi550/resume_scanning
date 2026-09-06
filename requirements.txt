@@ -16,3 +16,5 @@ scikit-learn
 gensim
 numpy
 sentence-transformers
+torch
+PyPDF2
