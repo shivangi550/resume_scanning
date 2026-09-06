@@ -697,7 +697,7 @@ Shivangi Jaiswal
 B.Sc.(Hons) Computer Science 
 Banaras Hindu University
 GitHub:
-YOUR_GITHUB_PROFILE_URL
+(https://github.com/shivangi550)
 
 
 # Acknowledgements
